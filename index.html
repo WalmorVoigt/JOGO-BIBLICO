@@ -194,10 +194,11 @@
 
     .score-display {
       text-align: right;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--primary);
+      padding-top: 25px;
     }
 
     .question {
@@ -277,7 +278,6 @@
       display: none;
       animation: fadeIn 0.5s ease;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      /* Melhorias para legibilidade */
       color: var(--dark);
       font-size: 1.1rem;
       line-height: 1.6;
@@ -405,13 +405,13 @@
 
     .level-indicator {
       position: absolute;
-      top: 25px;
-      right: 25px;
+      top: 15px;
+      right: 15px;
       background-color: rgba(44, 62, 80, 0.9);
       color: white;
-      padding: 8px 15px;
+      padding: 6px 12px;
       border-radius: 20px;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: bold;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
       z-index: 10;
@@ -1282,9 +1282,9 @@
         score++;
       }
       
-      // Mostrar explicação (CORREÇÃO APLICADA AQUI)
+      // Mostrar explicação
       const feedback = document.getElementById('feedback');
-      feedback.textContent = question.explanation; // Usamos textContent em vez de innerHTML
+      feedback.textContent = question.explanation;
       feedback.style.display = 'block';
       
       document.getElementById('nextBtn').style.display = 'block';
