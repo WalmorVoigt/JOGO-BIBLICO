@@ -3,1374 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo Bíblico Completo</title>
-  <style>
-    :root {
-      --primary: #2c3e50;
-      --secondary: #3498db;
-      --correct: #2ecc71;
-      --incorrect: #e74c3c;
-      --light: #ecf0f1;
-      --dark: #2c3e50;
-      --highlight: #f1c40f;
-      --level1: #3498db;
-      --level2: #2ecc71;
-      --level3: #f1c40f;
-      --level4: #e74c3c;
-      --level5: #9b59b6;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a2a3a, #2c3e50);
-      color: var(--light);
-      line-height: 1.6;
-      padding: 20px;
-      min-height: 100vh;
-      background-attachment: fixed;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
-      transition: transform 0.3s ease;
-    }
-
-    .container:hover {
-      transform: translateY(-5px);
-    }
-
-    header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 C50,0 50,100 100,100 L100,0 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-      background-size: cover;
-      opacity: 0.3;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-      position: relative;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 30px;
-      position: relative;
-    }
-
-    .level-selection {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      padding: 30px 20px;
-      transition: opacity 0.3s ease;
-    }
-
-    .level-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      width: 110px;
-    }
-
-    .level-btn {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      color: white;
-      border: none;
-      font-size: 1.8rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .level-btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.2);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .level-btn:hover::before {
-      opacity: 1;
-    }
-
-    .level-btn.level-1 {
-      background-color: var(--level1);
-    }
-
-    .level-btn.level-2 {
-      background-color: var(--level2);
-    }
-
-    .level-btn.level-3 {
-      background-color: var(--level3);
-      color: var(--dark);
-    }
-
-    .level-btn.level-4 {
-      background-color: var(--level4);
-    }
-
-    .level-btn.level-5 {
-      background-color: var(--level5);
-    }
-
-    .level-btn:hover:not(:disabled) {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .level-btn:disabled {
-      background-color: #95a5a6 !important;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .quiz-container {
-      padding: 20px;
-      display: none;
-      position: relative;
-    }
-
-    .progress-container {
-      width: 100%;
-      background-color: #dfe6e9;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      height: 12px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--secondary), #2c8ac7);
-      border-radius: 10px;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-
-    .score-display {
-      text-align: right;
-      margin-bottom: 15px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: var(--primary);
-      padding-top: 25px;
-    }
-
-    .question {
-      font-size: 1.5rem;
-      margin-bottom: 30px;
-      color: var(--primary);
-      padding: 15px;
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-
-    .option-btn {
-      padding: 17px;
-      background-color: white;
-      border: 2px solid #bdc3c7;
-      border-radius: 8px;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 1.1rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .option-btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(to right, rgba(52, 152, 219, 0.1), transparent);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .option-btn:hover:not(:disabled)::before {
-      opacity: 1;
-    }
-
-    .option-btn:hover:not(:disabled) {
-      background-color: #f5f6fa;
-      border-color: var(--secondary);
-      transform: translateX(5px);
-    }
-
-    .option-btn:disabled {
-      cursor: not-allowed;
-    }
-
-    .correct {
-      background-color: var(--correct) !important;
-      color: white;
-      border-color: var(--correct) !important;
-    }
-
-    .incorrect {
-      background-color: var(--incorrect) !important;
-      color: white;
-      border-color: var(--incorrect) !important;
-    }
-
-    .feedback {
-      background-color: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      border-left: 5px solid var(--secondary);
-      margin-bottom: 20px;
-      display: none;
-      animation: fadeIn 0.5s ease;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      color: var(--dark);
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .next-btn {
-      display: none;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(to right, var(--secondary), #2c8ac7);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-    }
-
-    .next-btn:hover {
-      background: linear-gradient(to right, #2980b9, #2471a3);
-      transform: translateY(-2px);
-    }
-
-    .result-container {
-      text-align: center;
-      padding: 40px 20px;
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .result-title {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
-      color: var(--primary);
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-
-    .result-score {
-      font-size: 1.5rem;
-      margin-bottom: 25px;
-      font-weight: bold;
-      color: var(--secondary);
-    }
-
-    .result-message {
-      margin-bottom: 35px;
-      font-size: 1.2rem;
-      line-height: 1.7;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      color: var(--dark);
-    }
-
-    .action-btn {
-      padding: 14px 30px;
-      margin: 10px;
-      border: none;
-      border-radius: 50px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      min-width: 200px;
-    }
-
-    .home-btn {
-      background: linear-gradient(to right, #95a5a6, #7f8c8d);
-      color: white;
-    }
-
-    .home-btn:hover {
-      background: linear-gradient(to right, #7f8c8d, #6c7a7d);
-      transform: translateY(-3px);
-    }
-
-    .retry-btn {
-      background: linear-gradient(to right, var(--highlight), #e2b607);
-      color: var(--dark);
-    }
-
-    .retry-btn:hover {
-      background: linear-gradient(to right, #f39c12, #e08e0b);
-      transform: translateY(-3px);
-    }
-
-    .next-level-btn {
-      background: linear-gradient(to right, var(--correct), #27ae60);
-      color: white;
-    }
-
-    .next-level-btn:hover {
-      background: linear-gradient(to right, #27ae60, #219653);
-      transform: translateY(-3px);
-    }
-
-    .locked-message {
-      text-align: center;
-      margin: 15px 0;
-      color: #e74c3c;
-      font-weight: bold;
-      display: none;
-      padding: 15px;
-      background-color: #fadbd8;
-      border-radius: 8px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
-    .level-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background-color: rgba(44, 62, 80, 0.9);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      z-index: 10;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 20px;
-      padding: 20px;
-      color: #7f8c8d;
-      font-size: 1rem;
-      background-color: #f8f9fa;
-    }
-
-    .level-info {
-      margin-top: 5px;
-      font-size: 0.9rem;
-      opacity: 0.8;
-      text-align: center;
-      color: var(--dark);
-    }
-
-    .level-completion {
-      height: 5px;
-      background: #e0e0e0;
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .level-progress {
-      height: 100%;
-      background: var(--correct);
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-
-    .btn-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    @media (min-width: 600px) {
-      .options {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .level-selection {
-        gap: 25px;
-      }
-      
-      .level-btn {
-        width: 90px;
-        height: 90px;
-        font-size: 2rem;
-      }
-      
-      .action-btn {
-        min-width: 180px;
-      }
-    }
-  </style>
+  <meta name="description" content="Jogo Bíblico - Teste seu conhecimento da Palavra de Deus com 100 perguntas em 5 níveis de dificuldade">
+  <meta name="keywords" content="jogo bíblico, perguntas bíblicas, quiz cristão, conhecimento bíblico">
+  <meta name="author" content="WALMOR.V">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jogo Bíblico - Teste seu Conhecimento">
+  <meta property="og:description" content="100 perguntas bíblicas em 5 níveis de dificuldade">
+  <meta property="og:url" content="">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Jogo Bíblico - Teste seu Conhecimento">
+  <meta property="twitter:description" content="100 perguntas bíblicas em 5 níveis de dificuldade">
+  
+  <title>Jogo Bíblico - Teste seu Conhecimento da Palavra de Deus</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Skip to main content for accessibility -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+  
   <div class="container">
     <header>
-      <h1>Jogo Bíblico Completo</h1>
+      <h1>🙏 Jogo Bíblico</h1>
       <p class="subtitle">Teste seu conhecimento da Palavra de Deus</p>
+      <div class="theme-toggle">
+        <button id="themeToggle" class="theme-btn" aria-label="Alternar tema escuro/claro">
+          🌙
+        </button>
+      </div>
     </header>
 
-    <div class="level-selection" id="levelSelection">
-      <div class="level-card">
-        <button class="level-btn level-1" onclick="startGame(1)" aria-label="Nível 1 - Básico">1</button>
-        <div class="level-info">Básico</div>
-        <div class="level-completion"><div class="level-progress" id="level1Progress"></div></div>
-      </div>
-      <div class="level-card">
-        <button class="level-btn level-2" id="level2Btn" onclick="checkLevel(2)" disabled aria-label="Nível 2 - Intermediário">2</button>
-        <div class="level-info">Intermediário</div>
-        <div class="level-completion"><div class="level-progress" id="level2Progress"></div></div>
-      </div>
-      <div class="level-card">
-        <button class="level-btn level-3" id="level3Btn" onclick="checkLevel(3)" disabled aria-label="Nível 3 - Avançado">3</button>
-        <div class="level-info">Avançado</div>
-        <div class="level-completion"><div class="level-progress" id="level3Progress"></div></div>
-      </div>
-      <div class="level-card">
-        <button class="level-btn level-4" id="level4Btn" onclick="checkLevel(4)" disabled aria-label="Nível 4 - Especialista">4</button>
-        <div class="level-info">Especialista</div>
-        <div class="level-completion"><div class="level-progress" id="level4Progress"></div></div>
-      </div>
-      <div class="level-card">
-        <button class="level-btn level-5" id="level5Btn" onclick="checkLevel(5)" disabled aria-label="Nível 5 - Mestre">5</button>
-        <div class="level-info">Mestre</div>
-        <div class="level-completion"><div class="level-progress" id="level5Progress"></div></div>
-      </div>
-    </div>
-    <div id="lockedMessage" class="locked-message">
-      Complete o nível anterior com 100% para desbloquear este nível
-    </div>
+    <main id="main-content">
+      <!-- Tela de seleção de níveis -->
+      <section class="level-selection" id="levelSelection" aria-label="Seleção de níveis">
+        <h2 class="sr-only">Escolha seu nível</h2>
+        <div class="level-grid">
+          <button class="level-btn level-1" onclick="startGame(1)" aria-label="Nível 1 - Básico">
+            <span class="level-number">1</span>
+            <span class="level-name">Básico</span>
+          </button>
+          <button class="level-btn level-2" id="level2Btn" onclick="checkLevel(2)" disabled aria-label="Nível 2 - Intermediário (Bloqueado)">
+            <span class="level-number">2</span>
+            <span class="level-name">Intermediário</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+          <button class="level-btn level-3" id="level3Btn" onclick="checkLevel(3)" disabled aria-label="Nível 3 - Avançado (Bloqueado)">
+            <span class="level-number">3</span>
+            <span class="level-name">Avançado</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+          <button class="level-btn level-4" id="level4Btn" onclick="checkLevel(4)" disabled aria-label="Nível 4 - Expert (Bloqueado)">
+            <span class="level-number">4</span>
+            <span class="level-name">Expert</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+          <button class="level-btn level-5" id="level5Btn" onclick="checkLevel(5)" disabled aria-label="Nível 5 - Mestre (Bloqueado)">
+            <span class="level-number">5</span>
+            <span class="level-name">Mestre</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+        </div>
+        <div id="lockedMessage" class="locked-message" role="alert" aria-live="polite">
+          Complete o nível anterior com 100% para desbloquear este nível
+        </div>
+      </section>
 
-    <div class="quiz-container" id="quizContainer">
-      <div class="level-indicator" id="levelIndicator">Nível 1</div>
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <div class="score-display" id="scoreDisplay" aria-live="polite">Pontuação: 0</div>
-      <h2 class="question" id="question"></h2>
-      <div class="options" id="options"></div>
-      <div class="feedback" id="feedback" aria-live="polite"></div>
-      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Próxima Pergunta →</button>
-    </div>
+      <!-- Tela do quiz -->
+      <section class="quiz-container" id="quizContainer" aria-label="Quiz bíblico">
+        <div class="quiz-header">
+          <div class="level-indicator" id="levelIndicator">Nível 1</div>
+          <button class="home-btn-small" onclick="goHome()" aria-label="Voltar ao início">🏠</button>
+        </div>
+        
+        <div class="progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" id="progressBar"></div>
+          <span class="progress-text" id="progressText">0/20</span>
+        </div>
+        
+        <div class="score-display" id="scoreDisplay" aria-live="polite">
+          <span class="score-label">Pontuação:</span>
+          <span class="score-value">0</span>
+        </div>
+        
+        <div class="question-container">
+          <h2 class="question" id="question"></h2>
+          <div class="question-counter" id="questionCounter" aria-live="polite"></div>
+        </div>
+        
+        <div class="options" id="options" role="group" aria-label="Opções de resposta"></div>
+        
+        <div class="feedback" id="feedback" role="alert" aria-live="polite"></div>
+        
+        <div class="quiz-actions">
+          <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+            Próxima Pergunta
+          </button>
+        </div>
+      </section>
 
-    <div class="result-container" id="resultContainer">
-      <h2 class="result-title" id="resultTitle"></h2>
-      <div class="result-score" id="resultScore"></div>
-      <p class="result-message" id="resultMessage"></p>
-      <div class="btn-container">
-        <button class="action-btn home-btn" onclick="goHome()">Voltar ao Início</button>
-        <button class="action-btn retry-btn" onclick="retryLevel()">Tentar Novamente</button>
-        <button class="action-btn next-level-btn" id="nextLevelBtn" onclick="startNextLevel()">Próximo Nível</button>
-      </div>
-    </div>
+      <!-- Tela de resultados -->
+      <section class="result-container" id="resultContainer" aria-label="Resultados do quiz">
+        <div class="result-icon" id="resultIcon"></div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <div class="result-score" id="resultScore"></div>
+        <p class="result-message" id="resultMessage"></p>
+        
+        <div class="result-stats" id="resultStats">
+          <div class="stat-item">
+            <span class="stat-value" id="correctAnswers">0</span>
+            <span class="stat-label">Acertos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="totalQuestions">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="accuracyPercentage">0%</span>
+            <span class="stat-label">Precisão</span>
+          </div>
+        </div>
+        
+        <div class="result-actions">
+          <button class="action-btn home-btn" onclick="goHome()">
+            🏠 Voltar ao Início
+          </button>
+          <button class="action-btn retry-btn" onclick="retryLevel()">
+            🔄 Tentar Novamente
+          </button>
+          <button class="action-btn next-level-btn" id="nextLevelBtn" onclick="startNextLevel()">
+            ⭐ Próximo Nível
+          </button>
+          <button class="action-btn share-btn" onclick="shareResult()">
+            📤 Compartilhar
+          </button>
+        </div>
+      </section>
+    </main>
 
     <footer>
-      Desenvolvido por WALMOR.V | 100 Perguntas Bíblicas
+      <p>Desenvolvido por <strong>WALMOR.V</strong> | 100 Perguntas Bíblicas</p>
+      <p class="version">Versão 2.0 - Melhorada</p>
     </footer>
   </div>
 
-  <script>
-    // Dados do jogo com 5 níveis e 100 perguntas únicas
-    const levels = {
-      1: [
-        {
-          question: "Quem criou o céu e a terra?",
-          options: ["Jesus", "Moisés", "Deus", "Adão"],
-          correct: 2,
-          explanation: "Gênesis 1:1 - No princípio, Deus criou os céus e a terra."
-        },
-        {
-          question: "Qual o primeiro homem criado por Deus?",
-          options: ["Abraão", "Noé", "Adão", "Jacó"],
-          correct: 2,
-          explanation: "Gênesis 2:7 - Então o Senhor Deus formou o homem do pó da terra."
-        },
-        {
-          question: "Qual o nome da esposa de Adão?",
-          options: ["Maria", "Eva", "Sara", "Rute"],
-          correct: 1,
-          explanation: "Gênesis 2:22 - Da costela que havia tirado do homem, o Senhor Deus fez uma mulher e a levou até ele."
-        },
-        {
-          question: "Quem construiu a arca?",
-          options: ["Abraão", "Moisés", "Noé", "Davi"],
-          correct: 2,
-          explanation: "Gênesis 6:14 - Faça para você uma arca de madeira de cipreste."
-        },
-        {
-          question: "Quem foi engolido por um grande peixe?",
-          options: ["Pedro", "Jonas", "Paulo", "Tiago"],
-          correct: 1,
-          explanation: "Jonas 1:17 - O Senhor providenciou um grande peixe para engolir Jonas."
-        },
-        {
-          question: "Quem abriu o Mar Vermelho?",
-          options: ["Josué", "Jesus", "Moisés", "Elias"],
-          correct: 2,
-          explanation: "Êxodo 14:21 - Moisés estendeu a mão sobre o mar, e o Senhor afastou o mar."
-        },
-        {
-          question: "Quem era a mãe de Jesus?",
-          options: ["Maria Madalena", "Marta", "Maria", "Ana"],
-          correct: 2,
-          explanation: "Lucas 1:30-31 - O anjo lhe disse: 'Não tenha medo, Maria; você foi agraciada por Deus!'"
-        },
-        {
-          question: "Quem batizou Jesus?",
-          options: ["Pedro", "João Batista", "Tiago", "Moisés"],
-          correct: 1,
-          explanation: "Mateus 3:13-17 - Então Jesus veio da Galileia ao Jordão para ser batizado por João."
-        },
-        {
-          question: "Onde Jesus nasceu?",
-          options: ["Jerusalém", "Nazaré", "Belém", "Galileia"],
-          correct: 2,
-          explanation: "Mateus 2:1 - Jesus nasceu em Belém da Judeia, nos dias do rei Herodes."
-        },
-        {
-          question: "Quem era o pai terreno de Jesus?",
-          options: ["José", "João", "Tiago", "Zacarias"],
-          correct: 0,
-          explanation: "Mateus 1:16 - Jacó gerou José, marido de Maria, da qual nasceu Jesus, que é chamado Cristo."
-        },
-        {
-          question: "Quantos discípulos Jesus teve?",
-          options: ["10", "12", "14", "7"],
-          correct: 1,
-          explanation: "Mateus 10:1-4 - Jesus chamou seus doze discípulos e deu-lhes autoridade."
-        },
-        {
-          question: "Qual o último livro da Bíblia?",
-          options: ["Apocalipse", "Judas", "Romanos", "Atos"],
-          correct: 0,
-          explanation: "Apocalipse é o último livro da Bíblia, escrito por João."
-        },
-        {
-          question: "Quem derrotou o gigante Golias?",
-          options: ["Saul", "Davi", "Samuel", "Salomão"],
-          correct: 1,
-          explanation: "1 Samuel 17:50 - Assim Davi prevaleceu sobre o filisteu com uma funda e uma pedra."
-        },
-        {
-          question: "Qual mandamento diz para honrar os pais?",
-          options: ["4º", "5º", "6º", "7º"],
-          correct: 1,
-          explanation: "Êxodo 20:12 - Honra teu pai e tua mãe, para que se prolonguem os teus dias na terra."
-        },
-        {
-          question: "Qual era a profissão de Pedro?",
-          options: ["Ferreiro", "Carpinteiro", "Pescador", "Pastor"],
-          correct: 2,
-          explanation: "Mateus 4:18 - Jesus viu dois irmãos: Simão, chamado Pedro, e André, que lançavam as redes ao mar, pois eram pescadores."
-        },
-        {
-          question: "Quem foi o primeiro mártir cristão?",
-          options: ["Pedro", "Tiago", "Estêvão", "Paulo"],
-          correct: 2,
-          explanation: "Atos 7:59-60 - E apedrejavam Estêvão, que orava e dizia: Senhor Jesus, recebe o meu espírito."
-        },
-        {
-          question: "Quem foi jogado na cova dos leões?",
-          options: ["Daniel", "Elias", "José", "Ezequiel"],
-          correct: 0,
-          explanation: "Daniel 6:16 - Então o rei ordenou que trouxessem Daniel e o lançassem na cova dos leões."
-        },
-        {
-          question: "Qual o nome do irmão de Moisés?",
-          options: ["Josué", "Arão", "Davi", "Elias"],
-          correct: 1,
-          explanation: "Êxodo 4:14 - Acaso não há Arão, teu irmão, o levita? Eu sei que ele fala bem."
-        },
-        {
-          question: "Quem foi alimentado por corvos?",
-          options: ["Elias", "Eliseu", "Jeremias", "Daniel"],
-          correct: 0,
-          explanation: "1 Reis 17:6 - E os corvos lhe traziam pão e carne pela manhã, e pão e carne à noite."
-        },
-        {
-          question: "Quantos dias e noites choveu durante o dilúvio?",
-          options: ["30", "40", "50", "60"],
-          correct: 1,
-          explanation: "Gênesis 7:12 - E houve chuva sobre a terra quarenta dias e quarenta noites."
-        }
-      ],
-      2: [
-        {
-          question: "Quem foi o homem mais sábio da Bíblia?",
-          options: ["Davi", "Salomão", "Moisés", "Abraão"],
-          correct: 1,
-          explanation: "1 Reis 3:12 - Darei a você um coração sábio e discernimento."
-        },
-        {
-          question: "Quem liderou Israel após Moisés?",
-          options: ["Josué", "Arão", "Samuel", "Elias"],
-          correct: 0,
-          explanation: "Josué 1:1-2 - Depois da morte de Moisés, o Senhor disse a Josué: 'Meu servo Moisés está morto.'"
-        },
-        {
-          question: "Quem matou mil homens com uma queixada de jumento?",
-          options: ["Sansão", "Gideão", "Jefté", "Davi"],
-          correct: 0,
-          explanation: "Juízes 15:15 - Encontrando uma queixada de jumento, Sansão pegou-a e matou mil homens."
-        },
-        {
-          question: "Quem escreveu o livro do Apocalipse?",
-          options: ["Pedro", "João", "Paulo", "Tiago"],
-          correct: 1,
-          explanation: "Apocalipse 1:1 - Revelação de Jesus Cristo, que Deus lhe deu para mostrar aos seus servos."
-        },
-        {
-          question: "Quem reconstruiu os muros de Jerusalém?",
-          options: ["Esdras", "Neemias", "Zorobabel", "Josué"],
-          correct: 1,
-          explanation: "Neemias 2:17 - Venham, reconstruamos o muro de Jerusalém."
-        },
-        {
-          question: "Qual livro fala da mulher virtuosa?",
-          options: ["Provérbios", "Ester", "Rute", "Cantares"],
-          correct: 0,
-          explanation: "Provérbios 31:10 - Mulher virtuosa, quem a achará? O seu valor muito excede o de rubis."
-        },
-        {
-          question: "Quem viu uma sarça ardente que não se consumia?",
-          options: ["Elias", "Moisés", "Josué", "Isaque"],
-          correct: 1,
-          explanation: "Êxodo 3:2 - O anjo do Senhor apareceu a ele numa chama de fogo que saía do meio de uma sarça."
-        },
-        {
-          question: "Quem foi chamado de amigo de Deus?",
-          options: ["Moisés", "Davi", "Abraão", "Samuel"],
-          correct: 2,
-          explanation: "Tiago 2:23 - Abraão creu em Deus, e isso lhe foi creditado como justiça, e ele foi chamado amigo de Deus."
-        },
-        {
-          question: "Quem foi escolhido para substituir Judas Iscariotes?",
-          options: ["Barnabé", "Matias", "Silas", "Timóteo"],
-          correct: 1,
-          explanation: "Atos 1:26 - Então tiraram sortes, e a sorte caiu sobre Matias, que foi acrescentado aos onze apóstolos."
-        },
-        {
-          question: "Quem sonhou com vacas magras e gordas?",
-          options: ["José", "Faraó", "Jacó", "Daniel"],
-          correct: 1,
-          explanation: "Gênesis 41:1-7 - Faraó sonhou que estava junto ao rio Nilo e viu sete vacas gordas e sete vacas magras."
-        },
-        {
-          question: "Quem ressuscitou Lázaro?",
-          options: ["Pedro", "Jesus", "Elias", "Paulo"],
-          correct: 1,
-          explanation: "João 11:43-44 - Jesus bradou em alta voz: 'Lázaro, venha para fora!'"
-        },
-        {
-          question: "Qual discípulo era cobrador de impostos?",
-          options: ["Pedro", "Tomé", "Mateus", "Felipe"],
-          correct: 2,
-          explanation: "Mateus 9:9 - Jesus viu um homem chamado Mateus, sentado na coletoria, e disse-lhe: 'Siga-me.'"
-        },
-        {
-          question: "Qual foi o primeiro milagre de Jesus?",
-          options: ["Curar um cego", "Transformar água em vinho", "Multiplicar pães", "Andar sobre as águas"],
-          correct: 1,
-          explanation: "João 2:1-11 - Jesus transformou água em vinho nas bodas de Caná."
-        },
-        {
-          question: "Quem escreveu a maioria das cartas do Novo Testamento?",
-          options: ["Pedro", "João", "Paulo", "Tiago"],
-          correct: 2,
-          explanation: "Paulo escreveu 13 das 21 epístolas do Novo Testamento."
-        },
-        {
-          question: "Quem andou com Deus e foi levado sem ver a morte?",
-          options: ["Elias", "Enoque", "Isaías", "Abel"],
-          correct: 1,
-          explanation: "Gênesis 5:24 - Enoque andou com Deus; e já não foi encontrado, pois Deus o havia arrebatado."
-        },
-        {
-          question: "Quem traiu Jesus com um beijo?",
-          options: ["Judas", "Pedro", "João", "Tomé"],
-          correct: 0,
-          explanation: "Mateus 26:48-49 - Aquele que o traía havia combinado um sinal com eles: 'Aquele a quem eu beijar, é ele; prendam-no.'"
-        },
-        {
-          question: "Quem andou sobre as águas com Jesus?",
-          options: ["João", "Pedro", "Paulo", "Tomé"],
-          correct: 1,
-          explanation: "Mateus 14:29 - Então Pedro saiu do barco, andou sobre as águas e foi na direção de Jesus."
-        },
-        {
-          question: "Quem negou Jesus três vezes?",
-          options: ["Pedro", "João", "Tomé", "André"],
-          correct: 0,
-          explanation: "Mateus 26:75 - Então Pedro se lembrou da palavra que Jesus havia dito: 'Antes que o galo cante, você me negará três vezes.'"
-        },
-        {
-          question: "Quem foi o pai de João Batista?",
-          options: ["Zacarias", "José", "Simão", "Caifás"],
-          correct: 0,
-          explanation: "Lucas 1:13 - O anjo lhe disse: 'Não tenha medo, Zacarias; sua oração foi ouvida. Isabel, sua esposa, lhe dará um filho.'"
-        },
-        {
-          question: "Quantos anos Matusalém viveu?",
-          options: ["900", "950", "969", "1000"],
-          correct: 2,
-          explanation: "Gênesis 5:27 - Todos os dias de Matusalém foram novecentos e sessenta e nove anos; e morreu."
-        }
-      ],
-      3: [
-        {
-          question: "Qual era a profissão de Paulo antes da conversão?",
-          options: ["Carpinteiro", "Ferreiro", "Fabricante de tendas", "Pescador"],
-          correct: 2,
-          explanation: "Atos 18:3 - Como tinham a mesma profissão, passou a morar e trabalhar com eles."
-        },
-        {
-          question: "Quem viu visões na ilha de Patmos?",
-          options: ["Paulo", "Pedro", "João", "Tiago"],
-          correct: 2,
-          explanation: "Apocalipse 1:9 - Eu, João, irmão e companheiro de vocês no sofrimento, estava na ilha de Patmos."
-        },
-        {
-          question: "Quem escreveu muitos Salmos?",
-          options: ["Moisés", "Davi", "Isaías", "Paulo"],
-          correct: 1,
-          explanation: "73 dos 150 Salmos são atribuídos a Davi."
-        },
-        {
-          question: "Quem enfrentou os profetas de Baal no Monte Carmelo?",
-          options: ["Elias", "Eliseu", "Isaías", "Daniel"],
-          correct: 0,
-          explanation: "1 Reis 18:20-40 - Elias desafiou os profetas de Baal no Monte Carmelo."
-        },
-        {
-          question: "Qual profeta foi levado ao céu num redemoinho?",
-          options: ["Elias", "Eliseu", "Isaías", "Jeremias"],
-          correct: 0,
-          explanation: "2 Reis 2:11 - E Elias subiu ao céu num redemoinho."
-        },
-        {
-          question: "Quem teve um sonho interpretado por Daniel?",
-          options: ["Faraó", "Nabucodonosor", "Herodes", "Pilatos"],
-          correct: 1,
-          explanation: "Daniel 2:1-49 - Nabucodonosor teve sonhos que Daniel interpretou."
-        },
-        {
-          question: "Qual mulher escondeu os espias israelitas?",
-          options: ["Raabe", "Rute", "Ester", "Débora"],
-          correct: 0,
-          explanation: "Josué 2:1-6 - Raabe escondeu os espias que Josué havia enviado."
-        },
-        {
-          question: "Quem foi vendido como escravo pelos irmãos?",
-          options: ["Benjamim", "José", "Judá", "Simeão"],
-          correct: 1,
-          explanation: "Gênesis 37:28 - Os irmãos de José o venderam aos ismaelitas por vinte moedas de prata."
-        },
-        {
-          question: "Qual rei teve lepra?",
-          options: ["Davi", "Salomão", "Uzias", "Josias"],
-          correct: 2,
-          explanation: "2 Crônicas 26:19-21 - Uzias ficou irado e foi ferido com lepra na testa."
-        },
-        {
-          question: "Quem foi a primeira esposa de Jacó?",
-          options: ["Raquel", "Lia", "Bila", "Zilpa"],
-          correct: 1,
-          explanation: "Gênesis 29:23 - Quando chegou a noite, Labão tomou sua filha Lia e a trouxe a Jacó."
-        },
-        {
-          question: "Qual profeta foi engolido por um grande peixe?",
-          options: ["Jeremias", "Ezequiel", "Jonas", "Oséias"],
-          correct: 2,
-          explanation: "Jonas 1:17 - O Senhor providenciou um grande peixe para engolir Jonas."
-        },
-        {
-          question: "Quem construiu o primeiro templo em Jerusalém?",
-          options: ["Davi", "Salomão", "Zorobabel", "Herodes"],
-          correct: 1,
-          explanation: "1 Reis 6:1 - Salomão começou a construir o templo do Senhor."
-        },
-        {
-          question: "Qual discípulo duvidou da ressurreição de Jesus?",
-          options: ["Pedro", "João", "Tomé", "André"],
-          correct: 2,
-          explanation: "João 20:24-25 - Tomé disse: 'Se eu não vir o sinal dos pregos em suas mãos... não crerei.'"
-        },
-        {
-          question: "Quem foi a mãe de Samuel?",
-          options: ["Ana", "Penina", "Rute", "Noemi"],
-          correct: 0,
-          explanation: "1 Samuel 1:20 - Ana engravidou e, no devido tempo, deu à luz um filho. Ela lhe deu o nome de Samuel."
-        },
-        {
-          question: "Qual cidade foi destruída por Deus com fogo e enxofre?",
-          options: ["Babilônia", "Nínive", "Sodoma", "Tiro"],
-          correct: 2,
-          explanation: "Gênesis 19:24 - Então o Senhor fez chover enxofre e fogo sobre Sodoma e Gomorra."
-        },
-        {
-          question: "Quem foi o sucessor de Elias?",
-          options: ["Eliseu", "Samuel", "Isaías", "Jeremias"],
-          correct: 0,
-          explanation: "2 Reis 2:9-15 - Eliseu recebeu porção dobrada do espírito de Elias."
-        },
-        {
-          question: "Qual era o nome original de Paulo?",
-          options: ["Simão", "Saulo", "Silas", "Silvano"],
-          correct: 1,
-          explanation: "Atos 13:9 - Então Saulo, também chamado Paulo, cheio do Espírito Santo..."
-        },
-        {
-          question: "Quem foi jogado numa fornalha ardente?",
-          options: ["Daniel", "Sadraque, Mesaque e Abede-Nego", "José", "Jeremias"],
-          correct: 1,
-          explanation: "Daniel 3:20-23 - Nabucodonosor mandou lançar Sadraque, Mesaque e Abede-Nego na fornalha ardente."
-        },
-        {
-          question: "Qual mulher se tornou rainha da Pérsia?",
-          options: ["Rute", "Ester", "Débora", "Miriã"],
-          correct: 1,
-          explanation: "Ester 2:17 - O rei amou Ester mais que todas as outras mulheres e a fez rainha."
-        },
-        {
-          question: "Quantos filhos Jacó teve?",
-          options: ["10", "11", "12", "13"],
-          correct: 2,
-          explanation: "Gênesis 35:22 - Os filhos de Jacó foram doze, que se tornaram as doze tribos de Israel."
-        }
-      ],
-      4: [
-        {
-          question: "Qual profeta predisse o nascimento de Jesus em Belém?",
-          options: ["Isaías", "Jeremias", "Miquéias", "Daniel"],
-          correct: 2,
-          explanation: "Miquéias 5:2 - Mas tu, Belém Efrata... de ti me sairá o que governará em Israel."
-        },
-        {
-          question: "Quem foi o último juiz de Israel?",
-          options: ["Gideão", "Sansão", "Samuel", "Eli"],
-          correct: 2,
-          explanation: "1 Samuel 7:15 - Samuel julgou Israel todos os dias da sua vida."
-        },
-        {
-          question: "Qual era o nome da sogra de Rute?",
-          options: ["Ana", "Noemi", "Miriã", "Débora"],
-          correct: 1,
-          explanation: "Rute 1:4 - Eles se casaram com mulheres moabitas; uma se chamava Orfa e a outra Rute."
-        },
-        {
-          question: "Quem foi o primeiro rei de Israel?",
-          options: ["Davi", "Salomão", "Saul", "Samuel"],
-          correct: 2,
-          explanation: "1 Samuel 10:1 - Samuel tomou um frasco de óleo e o derramou sobre a cabeça de Saul."
-        },
-        {
-          question: "Qual livro da Bíblia não menciona o nome de Deus?",
-          options: ["Rute", "Ester", "Cantares", "Eclesiastes"],
-          correct: 1,
-          explanation: "O livro de Ester é único por não mencionar explicitamente o nome de Deus."
-        },
-        {
-          question: "Quem escreveu o livro de Lamentações?",
-          options: ["Jeremias", "Isaías", "Ezequiel", "Daniel"],
-          correct: 0,
-          explanation: "Jeremias escreveu Lamentações após a destruição de Jerusalém."
-        },
-        {
-          question: "Qual era o nome do servo de Abraão que foi buscar esposa para Isaque?",
-          options: ["Eliézer", "Ismael", "Agar", "Lot"],
-          correct: 0,
-          explanation: "Gênesis 24:2 - Abraão disse ao mais antigo servo da sua casa, que administrava todos os seus bens."
-        },
-        {
-          question: "Quem foi morto por Davi com uma pedra?",
-          options: ["Saul", "Golias", "Absalão", "Joabe"],
-          correct: 1,
-          explanation: "1 Samuel 17:49 - Davi meteu a mão no alforje, tirou uma pedra e a atirou com a funda."
-        },
-        {
-          question: "Qual profeta foi alimentado por uma viúva em Sarepta?",
-          options: ["Elias", "Eliseu", "Isaías", "Jeremias"],
-          correct: 0,
-          explanation: "1 Reis 17:9-16 - Elias foi sustentado pela viúva de Sarepta durante a seca."
-        },
-        {
-          question: "Quem foi o pai de Salomão?",
-          options: ["Saul", "Samuel", "Davi", "Jessé"],
-          correct: 2,
-          explanation: "2 Samuel 12:24 - Davi consolou Bate-Seba, sua mulher... ela deu à luz um filho, e lhe pôs o nome de Salomão."
-        },
-        {
-          question: "Qual era o nome da montanha onde Moisés recebeu os Dez Mandamentos?",
-          options: ["Monte Carmelo", "Monte Sinai", "Monte Nebo", "Monte Sião"],
-          correct: 1,
-          explanation: "Êxodo 19:20 - O Senhor desceu sobre o monte Sinai, no cume do monte."
-        },
-        {
-          question: "Quem foi transformado em estátua de sal?",
-          options: ["A esposa de Ló", "A esposa de Noé", "Sara", "Rebeca"],
-          correct: 0,
-          explanation: "Gênesis 19:26 - A esposa de Ló olhou para trás e se transformou numa coluna de sal."
-        },
-        {
-          question: "Qual discípulo era irmão de Pedro?",
-          options: ["João", "Tiago", "André", "Felipe"],
-          correct: 2,
-          explanation: "Mateus 4:18 - Jesus viu dois irmãos: Simão, chamado Pedro, e André, seu irmão."
-        },
-        {
-          question: "Quem foi o profeta que ungiu Davi como rei?",
-          options: ["Elias", "Eliseu", "Samuel", "Natã"],
-          correct: 2,
-          explanation: "1 Samuel 16:13 - Samuel tomou o chifre de óleo e ungiu Davi na presença de seus irmãos."
-        },
-        {
-          question: "Qual era o nome do jardim onde Adão e Eva viviam?",
-          options: ["Jardim do Éden", "Jardim de Getsêmani", "Jardim de José", "Jardim Real"],
-          correct: 0,
-          explanation: "Gênesis 2:8 - O Senhor Deus plantou um jardim no Éden, do lado leste."
-        },
-        {
-          question: "Quem foi o profeta que confrontou o rei Acabe?",
-          options: ["Elias", "Eliseu", "Isaías", "Jeremias"],
-          correct: 0,
-          explanation: "1 Reis 18:17-18 - Quando Acabe viu Elias, disse-lhe: 'É você, perturbador de Israel?'"
-        },
-        {
-          question: "Qual era o nome do filho de Abraão com Agar?",
-          options: ["Isaque", "Ismael", "Jacó", "Esaú"],
-          correct: 1,
-          explanation: "Gênesis 16:15 - Agar deu à luz um filho a Abraão, e Abraão deu ao filho o nome de Ismael."
-        },
-        {
-          question: "Quem foi o rei que construiu os jardins suspensos da Babilônia?",
-          options: ["Nabucodonosor", "Belsazar", "Dario", "Ciro"],
-          correct: 0,
-          explanation: "Nabucodonosor II foi o rei babilônico famoso por suas construções grandiosas."
-        },
-        {
-          question: "Qual era o nome da irmã de Moisés?",
-          options: ["Débora", "Miriã", "Ana", "Ester"],
-          correct: 1,
-          explanation: "Êxodo 15:20 - Miriã, a profetisa, irmã de Arão, tomou um tamborim na mão."
-        },
-        {
-          question: "Quem foi o discípulo que Jesus amava?",
-          options: ["Pedro", "João", "Tiago", "André"],
-          correct: 1,
-          explanation: "João 13:23 - Um dos discípulos, aquele a quem Jesus amava, estava reclinado ao lado de Jesus."
-        }
-      ],
-      5: [
-        {
-          question: "Qual era o nome do sumo sacerdote que julgou Jesus?",
-          options: ["Anás", "Caifás", "Zacarias", "Simão"],
-          correct: 1,
-          explanation: "Mateus 26:57 - Os que prenderam Jesus o levaram a Caifás, o sumo sacerdote."
-        },
-        {
-          question: "Quem foi o centurião que reconheceu Jesus como Filho de Deus?",
-          options: ["Cornélio", "Júlio", "O centurião da crucificação", "Cláudio"],
-          correct: 2,
-          explanation: "Marcos 15:39 - O centurião que estava em frente da cruz, vendo como ele morreu, disse: 'Verdadeiramente este homem era Filho de Deus!'"
-        },
-        {
-          question: "Qual era o nome do monte onde Jesus foi transfigurado?",
-          options: ["Monte Sinai", "Monte Tabor", "Monte das Oliveiras", "Monte Hermom"],
-          correct: 1,
-          explanation: "Mateus 17:1-2 - Jesus levou Pedro, Tiago e João ao monte alto e foi transfigurado diante deles."
-        },
-        {
-          question: "Quem foi o profeta que predisse a vinda do Messias em Daniel 9?",
-          options: ["Isaías", "Jeremias", "Ezequiel", "Daniel"],
-          correct: 3,
-          explanation: "Daniel 9:24-27 - Daniel profetizou sobre as setenta semanas e a vinda do Messias."
-        },
-        {
-          question: "Qual era o nome do portão onde Pedro foi liberto da prisão?",
-          options: ["Portão de Ferro", "Portão Dourado", "Portão das Ovelhas", "Portão do Peixe"],
-          correct: 0,
-          explanation: "Atos 12:10 - Passaram pela primeira e segunda guardas e chegaram ao portão de ferro."
-        },
-        {
-          question: "Quem foi o rei que teve um sonho com uma grande estátua?",
-          options: ["Nabucodonosor", "Belsazar", "Dario", "Ciro"],
-          correct: 0,
-          explanation: "Daniel 2:31-35 - Nabucodonosor sonhou com uma grande estátua que Daniel interpretou."
-        },
-        {
-          question: "Qual era o nome da ilha onde Paulo naufragou?",
-          options: ["Creta", "Malta", "Chipre", "Rodes"],
-          correct: 1,
-          explanation: "Atos 28:1 - Uma vez em segurança, descobrimos que a ilha se chamava Malta."
-        },
-        {
-          question: "Quem foi o profeta que viu o vale de ossos secos?",
-          options: ["Isaías", "Jeremias", "Ezequiel", "Daniel"],
-          correct: 2,
-          explanation: "Ezequiel 37:1-14 - Ezequiel foi levado pelo Espírito ao vale cheio de ossos secos."
-        },
-        {
-          question: "Qual era o nome do oficial etíope que Filipe evangelizou?",
-          options: ["Simão", "Eunuco da Etiópia", "Cornélio", "Sérgio Paulo"],
-          correct: 1,
-          explanation: "Atos 8:27 - Havia um etíope, eunuco, alto oficial de Candace, rainha dos etíopes."
-        },
-        {
-          question: "Quem foi o rei que teve a mão seca restaurada?",
-          options: ["Jeroboão", "Roboão", "Uzias", "Josias"],
-          correct: 0,
-          explanation: "1 Reis 13:4-6 - A mão de Jeroboão secou quando ele a estendeu contra o homem de Deus."
-        },
-        {
-          question: "Qual era o nome da cidade onde Paulo teve a visão do homem macedônio?",
-          options: ["Antioquia", "Trôade", "Filipos", "Tessalônica"],
-          correct: 1,
-          explanation: "Atos 16:8-9 - Passando por Mísia, desceram a Trôade. Durante a noite Paulo teve uma visão."
-        },
-        {
-          question: "Quem foi o profeta que casou com uma prostituta por ordem de Deus?",
-          options: ["Isaías", "Jeremias", "Oséias", "Amós"],
-          correct: 2,
-          explanation: "Oséias 1:2 - O Senhor disse a Oséias: 'Vá, case-se com uma prostituta.'"
-        },
-        {
-          question: "Qual era o nome do vale onde Davi derrotou Golias?",
-          options: ["Vale de Elá", "Vale de Josafá", "Vale de Hinom", "Vale de Siquém"],
-          correct: 0,
-          explanation: "1 Samuel 17:2 - Saul e os israelitas se ajuntaram e acamparam no vale de Elá."
-        },
-        {
-          question: "Quem foi o profeta que predisse a destruição de Nínive?",
-          options: ["Jonas", "Naum", "Habacuque", "Sofonias"],
-          correct: 1,
-          explanation: "Naum 1:1 - Sentença contra Nínive. Livro da visão de Naum, o elcosita."
-        },
-        {
-          question: "Qual era o nome do rio onde Naamã foi curado da lepra?",
-          options: ["Rio Jordão", "Rio Eufrates", "Rio Nilo", "Rio Tigre"],
-          correct: 0,
-          explanation: "2 Reis 5:14 - Então desceu Naamã e mergulhou sete vezes no Jordão."
-        },
-        {
-          question: "Quem foi o rei que queimou o rolo da profecia de Jeremias?",
-          options: ["Jeoaquim", "Zedequias", "Joaquim", "Josias"],
-          correct: 0,
-          explanation: "Jeremias 36:23 - Jeoaquim cortava o rolo com um canivete e o lançava no fogo."
-        },
-        {
-          question: "Qual era o nome da fonte onde Gideão escolheu seus 300 homens?",
-          options: ["Fonte de Harod", "Fonte de Siloé", "Fonte de Jacó", "Fonte de Berseba"],
-          correct: 0,
-          explanation: "Juízes 7:1 - Gideão e todo o povo que estava com ele se levantaram de madrugada e acamparam junto à fonte de Harod."
-        },
-        {
-          question: "Quem foi o profeta que viu quatro carros com cavalos de diferentes cores?",
-          options: ["Daniel", "Ezequiel", "Zacarias", "Habacuque"],
-          correct: 2,
-          explanation: "Zacarias 6:1-8 - Zacarias viu quatro carros que saíam dentre dois montes de bronze."
-        },
-        {
-          question: "Qual era o nome da cidade onde Abraão quase sacrificou Isaque?",
-          options: ["Moriá", "Betel", "Hebrom", "Berseba"],
-          correct: 0,
-          explanation: "Gênesis 22:2 - Vá à terra de Moriá e ofereça-o ali em holocausto."
-        },
-        {
-          question: "Quem foi o último profeta do Antigo Testamento?",
-          options: ["Zacarias", "Ageu", "Malaquias", "Joel"],
-          correct: 2,
-          explanation: "Malaquias é tradicionalmente considerado o último profeta do Antigo Testamento."
-        }
-      ]
-    };
+  <!-- Loading indicator -->
+  <div class="loading" id="loading" aria-hidden="true">
+    <div class="loading-spinner"></div>
+    <p>Carregando perguntas...</p>
+  </div>
 
-    // Variáveis do jogo
-    let currentLevel = 1;
-    let currentQuestion = 0;
-    let score = 0;
-    let questions = [];
-    let answered = false;
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-    // Carregar progresso salvo
-    function loadProgress() {
-      const saved = localStorage.getItem('biblicalGameProgress');
-      const progress = saved ? JSON.parse(saved) : {};
-      
-      for (let i = 2; i <= 5; i++) {
-        const levelProgress = progress[`level${i-1}`] || 0;
-        if (levelProgress === 100) {
-          document.getElementById(`level${i}Btn`).disabled = false;
-        }
-        
-        // Atualizar barra de progresso
-        document.getElementById(`level${i-1}Progress`).style.width = `${levelProgress}%`;
-      }
-      
-      // Atualizar progresso do nível 1
-      document.getElementById('level1Progress').style.width = `${progress['level1'] || 0}%`;
-    }
-
-    // Salvar progresso
-    function saveProgress(level, percentage) {
-      let progress = {};
-      const saved = localStorage.getItem('biblicalGameProgress');
-      if (saved) {
-        progress = JSON.parse(saved);
-      }
-      
-      progress[`level${level}`] = percentage;
-      localStorage.setItem('biblicalGameProgress', JSON.stringify(progress));
-      
-      // Atualizar barra de progresso
-      document.getElementById(`level${level}Progress`).style.width = `${percentage}%`;
-      
-      // Desbloquear próximo nível se 100%
-      if (percentage === 100 && level < 5) {
-        document.getElementById(`level${level + 1}Btn`).disabled = false;
-      }
-    }
-
-    function checkLevel(level) {
-      if (document.getElementById(`level${level}Btn`).disabled) {
-        document.getElementById('lockedMessage').style.display = 'block';
-      } else {
-        document.getElementById('lockedMessage').style.display = 'none';
-        startGame(level);
-      }
-    }
-
-    // Iniciar jogo
-    function startGame(level) {
-      document.getElementById('progressBar').style.width = '0%';
-      currentLevel = level;
-      currentQuestion = 0;
-      score = 0;
-      answered = false;
-      questions = [...levels[level]];
-      
-      document.getElementById('levelSelection').style.display = 'none';
-      document.getElementById('lockedMessage').style.display = 'none';
-      document.getElementById('quizContainer').style.display = 'block';
-      document.getElementById('levelIndicator').textContent = `Nível ${level}`;
-      document.getElementById('feedback').style.display = 'none';
-      
-      displayQuestion();
-    }
-
-    // Exibir pergunta
-    function displayQuestion() {
-      if (currentQuestion >= questions.length) {
-        showResult();
-        return;
-      }
-
-      const question = questions[currentQuestion];
-      document.getElementById('question').textContent = question.question;
-      
-      const optionsContainer = document.getElementById('options');
-      optionsContainer.innerHTML = '';
-      
-      question.options.forEach((option, index) => {
-        const button = document.createElement('button');
-        button.className = 'option-btn';
-        button.textContent = option;
-        button.onclick = () => selectOption(index);
-        optionsContainer.appendChild(button);
-      });
-      
-      document.getElementById('feedback').style.display = 'none';
-      document.getElementById('nextBtn').style.display = 'none';
-      
-      updateProgress();
-      updateScore();
-      answered = false;
-    }
-
-    // Selecionar opção
-    function selectOption(selectedIndex) {
-      if (answered) return;
-      
-      answered = true;
-      const question = questions[currentQuestion];
-      const options = document.querySelectorAll('.option-btn');
-      
-      options.forEach((btn, index) => {
-        btn.disabled = true;
-        if (index === question.correct) {
-          btn.classList.add('correct');
-        } else if (index === selectedIndex && index !== question.correct) {
-          btn.classList.add('incorrect');
-        }
-      });
-      
-      if (selectedIndex === question.correct) {
-        score++;
-      }
-      
-      // Mostrar explicação
-      const feedback = document.getElementById('feedback');
-      feedback.textContent = question.explanation;
-      feedback.style.display = 'block';
-      
-      document.getElementById('nextBtn').style.display = 'block';
-      updateScore();
-    }
-
-    // Próxima pergunta
-    function nextQuestion() {
-      currentQuestion++;
-      displayQuestion();
-    }
-
-    // Atualizar progresso
-    function updateProgress() {
-      const progress = ((currentQuestion + 1) / questions.length) * 100;
-      document.getElementById('progressBar').style.width = progress + '%';
-    }
-
-    // Atualizar pontuação
-    function updateScore() {
-      document.getElementById('scoreDisplay').textContent = `Pontuação: ${score}/${questions.length}`;
-    }
-
-    // Mostrar resultado
-    function showResult() {
-      const percentage = Math.round((score / questions.length) * 100);
-      
-      document.getElementById('quizContainer').style.display = 'none';
-      document.getElementById('resultContainer').style.display = 'block';
-      
-      document.getElementById('resultTitle').textContent = getResultTitle(percentage);
-      document.getElementById('resultScore').textContent = `${score}/${questions.length} (${percentage}%)`;
-      document.getElementById('resultMessage').textContent = getResultMessage(percentage);
-      
-      // Mostrar botão do próximo nível se passou com 100%
-      const nextLevelBtn = document.getElementById('nextLevelBtn');
-      if (percentage === 100 && currentLevel < 5) {
-        nextLevelBtn.style.display = 'inline-block';
-      } else {
-        nextLevelBtn.style.display = 'none';
-      }
-      
-      saveProgress(currentLevel, percentage);
-    }
-
-    // Título do resultado
-    function getResultTitle(percentage) {
-      if (percentage === 100) return 'Perfeito!';
-      if (percentage >= 80) return 'Excelente!';
-      if (percentage >= 60) return 'Muito Bom!';
-      if (percentage >= 40) return 'Bom!';
-      return 'Continue Estudando!';
-    }
-
-    // Mensagem do resultado
-    function getResultMessage(percentage) {
-      if (percentage === 100) return 'Parabéns! Você domina este nível da Palavra de Deus!';
-      if (percentage >= 80) return 'Muito bem! Você tem um ótimo conhecimento bíblico!';
-      if (percentage >= 60) return 'Bom trabalho! Continue estudando a Bíblia!';
-      if (percentage >= 40) return 'Você está no caminho certo! Pratique mais!';
-      return 'Não desista! A Palavra de Deus é uma fonte inesgotável de sabedoria!';
-    }
-
-    // Voltar ao início
-    function goHome() {
-      document.getElementById('resultContainer').style.display = 'none';
-      document.getElementById('lockedMessage').style.display = 'none';
-      document.getElementById('levelSelection').style.display = 'flex';
-    }
-
-    // Tentar novamente
-    function retryLevel() {
-      startGame(currentLevel);
-    }
-
-    // Próximo nível
-    function startNextLevel() {
-      if (currentLevel < 5) {
-        startGame(currentLevel + 1);
-      }
-    }
-
-    // Inicializar ao carregar a página
-    window.onload = function() {
-      loadProgress();
-    };
-  </script>
+  <!-- Correção da ordem -->
+<script src="data.js"></script>
+<script src="game.js"></script>
+<script src="ui.js"></script>
 </body>
 </html>
