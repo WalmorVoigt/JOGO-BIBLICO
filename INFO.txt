@@ -1,0 +1,48 @@
+
+## 🚀 Como Usar
+
+1. **Baixe todos os arquivos** em uma mesma pasta
+2. **Abra o arquivo `index.html`** em seu navegador
+3. **Escolha um nível** para começar a jogar
+4. **Responda as perguntas** selecionando uma das opções
+5. **Avance para o próximo nível** ao atingir pelo menos 60% de acertos
+
+## 🎯 Níveis de Dificuldade
+
+1. **Básico**: Perguntas introdutórias sobre histórias bíblicas fundamentais
+2. **Intermediário**: Conceitos e personagens bíblicos mais detalhados
+3. **Avançado**: Detalhes específicos e conexões bíblicas
+4. **Expert**: Perguntas desafiadoras para conhecedores da Bíblia
+5. **Mestre**: Questões profundas para especialistas bíblicos
+
+## ⌨️ Controles
+
+- Use os números **1-4** para selecionar respostas durante o jogo
+- Tecla **Enter** para avançar para a próxima pergunta
+- Tecla **Escape** para sair do jogo atual
+
+## 🌙 Tema Escuro
+
+O jogo possui suporte a tema claro e escuro. Clique no botão de lua/sol no canto superior direito para alternar entre os temas.
+
+## 📊 Sistema de Progresso
+
+Seu progresso é salvo automaticamente no navegador, permitindo que você continue de onde parou mesmo fechando o jogo.
+
+## ✍️ Personalização
+
+Para adicionar ou modificar perguntas, edite o arquivo `data.js` seguindo a estrutura existente.
+
+## 👨‍💻 Desenvolvido por
+
+**WALMOR.V** - Versão 2.0
+
+## 📄 Licença
+
+Este projeto é disponibilizado para uso livre para fins educativos e não comerciais.
+
+## ❓ Dúvidas
+
+Se tiver alguma dúvida sobre o jogo, entre em contato com o desenvolvedor.
+
+Que Deus abençoe seu aprendizado da Palavra! 🙏
